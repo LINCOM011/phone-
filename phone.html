@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>phone</title>
+	<link rel="stylesheet" type="text/css" href="phone.css">
+</head>
+<body>
+	<div class="function">
+		<select id="network">
+		<option>GLO</option>
+		<option>MTN</option>
+		<option>AIRTEL</option>
+		<option>ETISALAT</option>
+	</select>
+	<select id="amount">
+		<option>100</option>
+		<option>200</option>
+		<option>300</option>
+		<option>400</option>
+		<option>500</option>
+		<option>1000</option>
+	</select>
+	<button onclick="buyCard()">Buy Card</button>
+	<button onclick="displayCard()">Display Card</button>
+	
+	<div id="outerCard"></div>
+	</div>
+	<div id="outer-container">
+<div id="container"></div>
+<div>
+	<input type="" name="display" class="screen" id="display">
+<select class="pageup" id="pageup">
+		<option>GLO</option>
+		<option>MTN</option>
+		<option>AIRTEL</option>
+		<option>ETISALAT</option>
+	</select>
+</div>
+<div class="pointer"></div>
+<p class="text">itel</p>
+<div class="menu">
+	<p class="select1">....</p>
+	<p class="select2" onclick="remove()">....</p>
+	<p class="select3" onclick="dialNum()">&#x2121</p>
+	<p class="select4" onclick="cancel()">&#9743</p>
+	<div class="scroll"></div>
+</div>
+<div class="number">
+	<div class="digit1" onclick="mybutton(1)">1</div>
+	<div class="digit2" onclick="mybutton(2)">2</div>
+	<div class="digit3" onclick="mybutton(3)">3</div>
+	<div class="digit4" onclick="mybutton(4)">4</div>
+	<div class="digit5" onclick="mybutton(5)">5</div>
+	<div class="digit6" onclick="mybutton(6)">6</div>
+	<div class="digit7" onclick="mybutton(7)">7</div>
+	<div class="digit8" onclick="mybutton(8)">8</div>
+	<div class="digit9" onclick="mybutton(9)">9</div>
+	<div class="digit-" onclick="mybutton('*')">*</div>
+	<div class="digit0" onclick="mybutton(0)">0</div>
+	<div class="digit--" onclick="mybutton('#')">#</div>
+</div>
+</div>
+<audio id="ringOut">
+		<source src="ringingtone.wav" type="audio/wav">
+	</audio>
+	<audio id="error">
+		<source src="https://cdn.hswstatic.com/sound/tele-busy.wav" type="audio/wav">
+	</audio>
+<script type="text/javascript">
+	let mybutton=(a)=>{
+     display.value+=a
+	}
+	let sumTotal
+	let rate
+	let x 
+let y = document.getElementById('error')
+let collectBalance
+	let cancel=()=>{
+		let cancelDisplay= display.value 
+		
+		if (display.value=="ringing...") {
+			x.pause()
+			display.value= "call ended"
+		}
+		else if (display.value=="error 404") {
+			y.pause()
+			display.value=""
+		}
+
+	else if (cancelDisplay.includes(":") && cancelDisplay.length>4) {
+		collectBalance = JSON.parse(localStorage.balance)
+		
+		
+			let firstTwo = cancelDisplay.slice(0,2)
+			let lastTwo = cancelDisplay.slice(3,5)
+			sumTotal=Number(firstTwo)+Number(lastTwo)
+			rate = sumTotal*0.24
+            clearInterval(clock)
+            let sss = collectBalance.find(val=>val.network==pageup.value)
+		sss.balance = (Number(sss.balance)-rate).toFixed(2)
+		display.value="aborting..."
+		setTimeout(function() { display.value = '#'+ ' ' + rate.toFixed(2) + ' ' + 'used'}, 3000)
+localStorage.balance = JSON.stringify(collectBalance);
+}
+else {
+	display.value=""
+}
+		
+        
+        
+	}
+	let remove=()=>{
+		let m = display.value;
+		let d = m.slice(0,m.length-1)
+		display.value= d
+	}
+ let localStorageCard
+let generateRandomNum=()=>{
+ 	let randomNum= Math.floor(100000000000+Math.random()*900000000000)
+ return randomNum
+ }
+let buyCard=()=>{
+	let objOfCard={network: network.value, amount: amount.value,  number:generateRandomNum(), value:"unused" }
+	!localStorage.hasOwnProperty("card")?localStorage.card=JSON.stringify([]):null
+      localStorageCard = JSON.parse(localStorage.card)  
+   localStorageCard.push(objOfCard)
+   localStorage.card = JSON.stringify(localStorageCard)
+	}
+let displayCard=()=>{
+	var outputCard=''
+	let  printCard = JSON.parse(localStorage.card)
+	 outputCard+="<table><tr><th>S/N</th><th>Network</th><th>Amount</th><th>Number</th><th>Value</th></tr>"
+	 for (var i = 0; i < printCard.length; i++) {
+	 	var m = i+1
+	 	var t = "<td>"+ m + "</td>"
+     	var k= "<td>" + printCard[i].network  + "</td>"
+     	var u= "<td>" + printCard[i].amount + "</td>"
+     	var e= "<td>" + printCard[i].number + "</td>"
+     	var f= "<td>" + printCard[i].value + "</td>"
+   		var sumOfData = t+k+u+e+f
+      	outputCard+="<tr>"+sumOfData+"</tr>"
+	 }
+	 outputCard+="</table>"
+	 outerCard.innerHTML=outputCard
+}
+
+
+
+let loadCard= () =>{
+	let loading = JSON.parse(localStorage.balance)
+	let findSimilarCard = loading.find(val=>val.network==pageup.value)
+	if (findSimilarCard && display.value=="*123#") {
+	    display.value = `balance = #${findSimilarCard.balance}` 	
+	 }
+	 else if (findSimilarCard=="MTN" && display.value=="*556#") {
+	    display.value = `balance = #${findSimilarCard.balance}` 	
+	 }
+	 else if (findSimilarCard && display.value=="*222#") {
+	    display.value = `balance = #${findSimilarCard.balance}` 
+	 }
+
+	 else if (findSimilarCard && display.value=="#124*1#") {
+	    display.value = `balance = #${findSimilarCard.balance}` 	
+	 }
+localStorage.balance = JSON.stringify(loading);
+}
+let clock
+let deductBalance=()=>{
+	let minutes =0
+	let seconds = 0
+ clock =setInterval(function () {
+		seconds++
+		if (seconds<10) {
+			display.value=`0${minutes}:0${seconds}`
+		}
+		else {
+			
+			if (seconds%60==0) {
+				minutes++
+				seconds="0"+1
+			}
+			display.value=`0${minutes}:${seconds}`
+		} }, 1000)
+return clock
+}
+
+
+
+
+
+let dialNum=()=>{
+ let myBalance
+ 
+ let cardDetails = display.value;
+ let balanceValue = JSON.parse(localStorage.card)
+for (var i = 0; i < balanceValue.length; i++) {
+     if (balanceValue[i].network==pageup.value && cardDetails.includes(balanceValue[i].number) && balanceValue[i].value=="unused"){
+		
+			balanceValue[i].value="used"
+			display.value=`${balanceValue[i].network} #${balanceValue[i].amount} succesful`
+		 	let objOfbalance = {balance:balanceValue[i].amount, network:balanceValue[i].network };
+  
+  		    myBalance = !localStorage.hasOwnProperty("balance")?[]:JSON.parse(localStorage.balance);
+   			if (myBalance.length==0) {
+   				myBalance.push(objOfbalance);
+   			}
+      			else{
+   				let myCheck = false;
+   				for (var j = 0; j < myBalance.length; j++) {
+
+   					if (myBalance[j].network===objOfbalance.network) {
+   						myBalance[j].balance=Number(myBalance[j].balance) +Number(objOfbalance.balance);
+   						myCheck= true;
+   						break;
+   					} 
+
+   				}
+   				if (!myCheck) {
+   					myBalance.push(objOfbalance);
+   				}
+        			 }
+        			 localStorage.balance = JSON.stringify(myBalance);
+        			 break;
+  			}
+
+  			else if (cardDetails.length==11 && cardDetails[0]==0) {
+  				let callamount = JSON.parse(localStorage.balance)
+  				let deep = callamount.find(val=>val.network==pageup.value)
+  				if (deep && deep.balance>0) {
+x = document.getElementById('ringOut')
+x.play()
+display.value= "ringing..."
+
+setTimeout(function(){ deductBalance()},30000)
+break;
+ }
+ else if (deep == undefined ) {
+  			display.value= "error 404"
+  			y.play()
+  			break;
+
+}
+}
+else if (cardDetails[0]=="*" || cardDetails[0]=="#" && cardDetails[cardDetails.length-1]=="#" && cardDetails.length<8) {
+
+	loadCard()
+	break;
+}
+	else{
+		
+		display.value="error 404"
+		
+		y.play()
+		break;
+	}
+  			 
+		}
+
+
+localStorage.card = JSON.stringify(balanceValue);
+
+}
+let i = 1
+console.log(setInterval(alert(i++), 2000))
+
+</script>
+</body>
+</html>
